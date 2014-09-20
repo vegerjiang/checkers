@@ -94,6 +94,7 @@ var usersInfo = [
 		"startBallFlag":"0-11"
 	}
 ];
+var tagetImgSrc = "https://raw.githubusercontent.com/vegerjiang/checkers/master/taget.png";
 function userIndexWithStartBallPlace(x,y,z){
 	if (abs(x) + abs(y) + abs(z) <= 4) {
 		return -1;
@@ -391,6 +392,53 @@ function findMapKeyMoveFrom_AllEnable(mapKey)
 	};
 	return allMoveEnable;
 }
+var tagetIDArray = [];
+function tagetDivHTML(tagetID){
+	return document.getElementById("div_taget_" + tagetID);
+}
+function tagetImgHTML(tagetID){
+	return document.getElementById("img_taget_" + tagetID);
+}
+function setTagetAtMapKey(mapKey){
+	var tagetID = undefined;
+	for (var i = 0; i < tagetIDArray.length; i++) {
+		if (tagetDivHTML(tagetIDArray[i]).style.display == "none") {
+			tagetID = tagetIDArray[i];
+		};
+	};
+	if (tagetID == undefined) {
+		tagetID = "taget_"+tagetIDArray.length;
+		tagetIDArray.push(tagetID);
+		document.getElementById("imgBalls").innerHTML += "<img class='ballBase' id='img_taget_" + tagetID + "' style='left:"+myMap[mapKey].px+"%;top:"+myMap[mapKey].py+"%;display:block;' src='"+tagetImgSrc+"'></img>";
+		document.getElementById("divBalls").innerHTML += "<div class='ballBase' id='div_taget_" + tagetID + "' style='left:"+myMap[mapKey].px+"%;top:"+myMap[mapKey].py+"%;display:block;'></div>";
+	}else{
+		var tagetDiv = tagetDivHTML(tagetID);
+		tagetDiv.style.left = myMap[mapKey].px;
+		tagetDiv.style.top = myMap[mapKey].py;
+		tagetDiv.style.display = "block";
+		var tagetImg = tagetImgHTML(tagetID);
+		tagetImg.style.left = myMap[mapKey].px;
+		tagetImg.style.top = myMap[mapKey].py;
+		tagetImg.style.display = "block";
+	}
+}
+function removeTagetAtMapKey(mapKey){
+	var leftPx = myMap[mapKey].px + "%";
+	var topPy = myMap[mapKey].py + "%";
+	for (var i = 0; i < tagetIDArray.length; i++) {
+		var taget = tagetDivHTML(tagetIDArray[i]);
+		if (taget.style.left == leftPx && taget.style.top == topPy) {
+			taget.style.display = "none";
+			return;
+		};
+	};
+}
+function clearTaget(){
+	for (var i = 0; i < tagetIDArray.length; i++) {
+		tagetDivHTML(tagetIDArray[i]).style.display = none;
+		tagetImgHTML(tagetIDArray[i]).style.display = none;
+	};
+}
 function putOnBalls()
 {
 	var ballIndex = 0;
@@ -422,6 +470,10 @@ function playTest()
 	moveBallWithMapKey("402","130");
 	moveBallWithMapKey("303","103");
 	var mapEnable = findMapKeyMoveFrom_AllEnable("204");
+	setTagetAtMapKey("204");
+	for (var i = 0; i < mapEnable.length; i++) {
+		setTagetAtMapKey(mapEnable[i]);
+	};
 	// alert(mapEnable);
 }
 function startMyGame()
