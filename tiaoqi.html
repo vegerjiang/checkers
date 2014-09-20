@@ -1,0 +1,448 @@
+<html>
+<head>
+<title>
+tiaoqi
+</title>
+<style type="text/css">
+.disableImage {
+	position: absolute;
+	display:none;
+}
+body {
+	background-color:#aabbcc;
+}
+.backgroundDiv {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+}
+.ballBase {
+	position:absolute;
+	width:5%;
+	height:5%;
+}
+</style>
+<script>
+function min(a,b)
+{
+	return Math.min(a,b);
+}
+function abs(a,b)
+{
+	return Math.abs(a,b);
+}
+var myMap = {
+	/*
+	"000":{
+		x:0,
+		y:0,
+		z:0,
+		px:0,
+		py:0,
+		"x-1":"-100",
+		"x+1":"100",
+		"y-1":"0-10",
+		"y+1":"010",
+		"z-1":"00-1",
+		"z+1":"001",
+		"ballIndex":0
+	}
+	*/
+};
+var directors = ["x-1","x+1","y-1","y+1","z-1","z+1"];
+var directorDelts = {
+	"x-1":[-1,0,0],
+	"x+1":[1,0,0],
+	"y-1":[0,-1,0],
+	"y+1":[0,1,0],
+	"z-1":[0,0,-1],
+	"z+1":[0,0,1]
+};
+var directorNegatives = {
+	"x-1":"x+1",
+	"x+1":"x-1",
+	"y-1":"y+1",
+	"y+1":"y-1",
+	"z-1":"z+1",
+	"z+1":"z-1"
+};
+var usersInfo = [
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b1.png",
+		"startBallFlag":"101"
+	},
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b2.png",
+		"startBallFlag":"-10-1"
+	},
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b3.png",
+		"startBallFlag":"110"
+	},
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b4.png",
+		"startBallFlag":"-1-10"
+	},
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b5.png",
+		"startBallFlag":"01-1"
+	},
+	{
+		"ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b6.png",
+		"startBallFlag":"0-11"
+	}
+];
+function userIndexWithStartBallPlace(x,y,z){
+	if (abs(x) + abs(y) + abs(z) <= 4) {
+		return -1;
+	};
+	var startBallFlag = "";
+	startBallFlag += (x>0?1:x<0?-1:0);
+	startBallFlag += (y>0?1:y<0?-1:0);
+	startBallFlag += (z>0?1:z<0?-1:0);
+	for (var i = 0; i < usersInfo.length; i++) {
+		if (usersInfo[i]["startBallFlag"] == startBallFlag) {
+			return i;
+		};
+	};
+	return -1;
+}
+function takeKey(x,y,z)
+{
+	if( x * y < 0)
+	{
+		var minAbs = min(abs(x),abs(y));
+		if(x < 0)
+		{
+			minAbs = -minAbs;
+		}
+		z += minAbs;
+		x -= minAbs;
+		y += minAbs;
+	}
+	if( x * z < 0)
+	{
+		var minAbs = min(abs(x),abs(z));
+		if(x < 0)
+		{
+			minAbs = -minAbs;
+		}
+		y += minAbs;
+		x -= minAbs;
+		z += minAbs;
+	}
+	if(y * z > 0)
+	{
+		var minAbs = min(abs(y),abs(z));
+		if(y < 0)
+		{
+			minAbs = -minAbs;
+		}
+		x += minAbs;
+		y -= minAbs;
+		z -= minAbs;
+	}
+	return x + "" + y + "" + z + "";
+}
+function makeMapOnKey(mapKey)
+{
+	var cElement = myMap[mapKey];
+	var x = cElement.x;
+	var y = cElement.y;
+	var z = cElement.z;
+	for(var directKey in directorDelts)
+	{
+		if(cElement[directKey] != undefined)
+		{
+			continue;
+		}
+		var mapNextKey = takeKey(x+directorDelts[directKey][0],y+directorDelts[directKey][1],z+directorDelts[directKey][2]);
+		var mapNext = myMap[mapNextKey];
+		if(mapNext == undefined)
+		{
+			cElement[directKey] = "none";
+		}else{
+			cElement[directKey] = mapNextKey;
+			mapNext[directorNegatives[directKey]] = mapKey;
+			makeMapOnKey(mapNextKey);
+		}
+	}
+}
+function checkMyMap()
+{
+	var amountOfNone = 0;
+	var amountOfAll = 0;
+	for(var elementKey in myMap)
+	{
+		var element = myMap[elementKey];
+		for(var i = 0;i<6;i++)
+		{
+			if(element[directors[i]] == undefined)
+			{
+				alert("error at "+ elementKey + ": with:"+directors[i]);
+			}else if(element[directors[i]] == "none"){
+				amountOfNone++;
+				amountOfAll ++;
+			}else{
+				amountOfAll ++;
+			}
+		}
+	}
+	if(amountOfNone != 4 * 2 * 12 + 6){
+	   alert("amountOfNone = "+amountOfNone + " amountOfAll = "+amountOfAll);
+	   return false;
+	}
+	if(amountOfAll != 121*6)
+	{
+	   alert("amountOfAll = "+amountOfAll);
+	   return false;
+	}
+	return true;
+}
+function initMyMap()
+{
+	var mapBaseMetrix = [
+		[[0,0],[0,0],[0,0]],	//(0,0,0)
+		
+		[[1,0],[0,0],[0,0]],	//(1,0,0)
+		[[0,0],[1,0],[0,0]],	//(0,1,0)
+		[[0,0],[0,0],[1,0]],	//(0,0,1)
+		
+		[[1,0],[0,1],[0,0]],	//(1,1,0)
+		[[1,0],[0,0],[0,1]],	//(1,0,1)
+		[[0,0],[1,0],[0,-1]],	//(0,1,-1)
+	];
+	for(var i = 1;i <= 4;i++)
+	   for(var j = 1;j <= 4;j++)
+	   {
+			for(var k = 0;k<mapBaseMetrix.length;k++)
+			{
+				var x = mapBaseMetrix[k][0][0] * i + mapBaseMetrix[k][0][1] * j;
+				var y = mapBaseMetrix[k][1][0] * i + mapBaseMetrix[k][1][1] * j;
+				var z = mapBaseMetrix[k][2][0] * i + mapBaseMetrix[k][2][1] * j;
+				myMap[x+""+y+""+z] = {
+					"x":x,
+					"y":y,
+					"z":z,
+					"px":Math.round(((x+y*0.5+z*0.5)*7.6+50 - 2.5)*100)/100,
+					"py":Math.round((((y-z)*0.866)*5.6+50 - 2)*100)/100
+				};
+				myMap[(-x)+""+(-y)+""+(-z)] = {
+					"x":-x,
+					"y":-y,
+					"z":-z,
+					"px":Math.round(((-(x+y*0.5+z*0.5))*7.6+50 - 2.5)*100)/100,
+					"py":Math.round(((-(y-z)*0.866)*5.6+50 - 2)*100)/100
+				};
+			}
+	   }
+	makeMapOnKey("000");
+	putOnBalls();
+	playGame();
+}
+function addOneBall(ballIndex,ballPx,ballPy,ballUrls,mapKey)
+{
+	var imgBallID = "img_ball_" + ballIndex;
+	var divBallID = "div_ball_" + ballIndex;
+	document.getElementById("imgBalls").innerHTML += "<img class='ballBase' id='" + imgBallID + "' style='left:"+ballPx+"%;top:"+ballPy+"%;' src='"+ballUrls+"'></img>";
+	document.getElementById("divBalls").innerHTML += "<div class='ballBase' id='" + divBallID + "' style='left:"+ballPx+"%;top:"+ballPy+"%;'></div>";
+	myMap[mapKey]["ballIndex"] = ballIndex;
+	return {
+		"img_ID":imgBallID,
+		"div_ID":divBallID
+	};
+}
+function imgBallHTML(imgBallID){
+	return document.getElementById(imgBallID);
+}
+function divBallHTML(divBallID){
+	return document.getElementById(divBallID);
+}
+var allBallsOnPlatform = [];
+/*
+{
+	"userIndex":0,
+	"mapKey":"000",
+	"imgBallID":"img_ball_0",
+	"divBallID":"div_ball_0"
+}
+*/
+function findBallOnPlatformByKey(keyName,keyValue)
+{
+	var ballFinded = [];
+	for (var i = 0; i < allBallsOnPlatform.length; i++) {
+		if (allBallsOnPlatform[i][keyName] == keyValue) {
+			ballFinded.push(allBallsOnPlatform[i]);
+		};
+	};
+	return ballFinded;
+}
+function moveBallWithMapKey(fromMapKey,toMapKey)
+{
+	if (myMap[fromMapKey]["ballIndex"] == undefined) {
+		alert("erro: fromeBall Not exist!");
+		return false;
+	};
+	if (myMap[toMapKey]["ballIndex"] != undefined) {
+		alert("error: toBall exist!");
+		return false;
+	};
+	var ballIndex = myMap[fromMapKey]["ballIndex"];
+	myMap[fromMapKey]["ballIndex"] = undefined;
+	myMap[toMapKey]["ballIndex"] = ballIndex;
+	allBallsOnPlatform[ballIndex]["mapKey"] = toMapKey;
+	imgBallHTML(allBallsOnPlatform[ballIndex]["imgBallID"]).style.left = myMap[toMapKey]["px"] + "%";
+	imgBallHTML(allBallsOnPlatform[ballIndex]["imgBallID"]).style.top = myMap[toMapKey]["py"] + "%";
+	divBallHTML(allBallsOnPlatform[ballIndex]["divBallID"]).style.left = myMap[toMapKey]["px"] + "%";
+	divBallHTML(allBallsOnPlatform[ballIndex]["divBallID"]).style.top = myMap[toMapKey]["py"] + "%";
+	return true;
+}
+function findMapKeyWalkFrom(mapKey)
+{
+	var allOneStepWalk = [];
+	for (var direct in directorDelts) {
+		var nextMapKey = myMap[mapKey][direct];
+		if (nextMapKey != "none" && myMap[nextMapKey]["ballIndex"] == undefined) {
+			allOneStepWalk.push(nextMapKey);
+		};
+	};
+	return allOneStepWalk;
+
+}
+function findMapKeyJumpFrom_OneStep_WithDirect(mapKey,direct)
+{
+	var nextMapKey = myMap[mapKey][direct];
+	var directEnables = [];
+	var iStep = 0;
+	while(nextMapKey != "none" && myMap[nextMapKey]["ballIndex"] == undefined)
+	{
+		iStep++;
+		nextMapKey = myMap[nextMapKey][direct];
+	}
+	if (nextMapKey == "none") {
+		return directEnables;
+	};
+	nextMapKey = myMap[nextMapKey][direct];
+	while(nextMapKey != "none" && myMap[nextMapKey]["ballIndex"] == undefined)
+	{
+		if (iStep == 0) {
+			directEnables.push(nextMapKey);
+			return directEnables;
+		};
+		iStep--;
+		nextMapKey = myMap[nextMapKey][direct];
+	}
+	return directEnables;
+}
+function findMapKeyJumpFrom_OneStep(mapKey)
+{
+	var allOneStepJump = [];
+	for (var direct in directorDelts) {
+		var tDirectJump = findMapKeyJumpFrom_OneStep_WithDirect(mapKey,direct);
+		for (var j = 0; j < tDirectJump.length; j++) {
+			allOneStepJump.push(tDirectJump[j]);
+		};
+	};
+	return allOneStepJump;
+}
+function findMapKeyJumpFrom_AllEnable(mapKey)
+{
+	var jumpArray = [];
+	var jumpDic = {
+	};
+	jumpDic[mapKey] = true;
+	var allJumpKey = [];
+	jumpArray.push(mapKey);
+	for (var i = 0; i < jumpArray.length; i++) {
+		var currentKey = jumpArray[i];
+		var oneJump = findMapKeyJumpFrom_OneStep(currentKey);
+		for(var j = 0;j<oneJump.length;j++){
+			if (jumpDic[oneJump[j]]) {
+				continue;
+			};
+			jumpArray.push(oneJump[j]);
+			allJumpKey.push(oneJump[j]);
+			jumpDic[oneJump[j]] = true;
+		}
+	};
+	return allJumpKey;
+}
+function findMapKeyMoveFrom_AllEnable(mapKey)
+{
+	var allWalkEnable = findMapKeyWalkFrom(mapKey);
+	var allJumpEnable = findMapKeyJumpFrom_AllEnable(mapKey);
+	var allMoveEnable = [];
+	var allMoveDic = {};
+	for (var i = 0; i < allWalkEnable.length; i++) {
+		if(allMoveDic[allWalkEnable[i]]){
+			continue;
+		}
+		allMoveEnable.push(allWalkEnable[i]);
+		allMoveDic[allWalkEnable[i]] = true;
+	};
+	for (var i = 0; i < allJumpEnable.length; i++) {
+		if(allMoveDic[allJumpEnable[i]]){
+			continue;
+		}
+		allMoveEnable.push(allJumpEnable[i]);
+		allMoveDic[allJumpEnable[i]] = true;
+	};
+	return allMoveEnable;
+}
+function putOnBalls()
+{
+	var ballIndex = 0;
+	for(var elementKey in myMap)
+	{
+		var element = myMap[elementKey];
+		var userIndex = userIndexWithStartBallPlace(element["x"],element["y"],element["z"]);
+		if (userIndex < 0) {
+			continue;
+		};
+		var htmlIDs = addOneBall(ballIndex++,element["px"],element["py"],usersInfo[userIndex]["ballUrls"],elementKey);
+		allBallsOnPlatform.push({
+			"userIndex":userIndex,
+			"mapKey":elementKey,
+			"imgBallID":htmlIDs["img_ID"],
+			"divBallID":htmlIDs["div_ID"]
+		});
+	}
+}
+function playGame()
+{
+	setTimeout(function() {
+		playTest();
+	}, 2000);
+}
+function playTest()
+{
+	moveBallWithMapKey("410","310");
+	moveBallWithMapKey("402","130");
+	moveBallWithMapKey("303","103");
+	var mapEnable = findMapKeyMoveFrom_AllEnable("204");
+	// alert(mapEnable);
+}
+function startMyGame()
+{
+	setTimeout(function() {
+		initMyMap();
+	}, 2000);
+}
+</script>
+</head>
+<body onLoad="startMyGame()">
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b1.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b2.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b3.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b4.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b5.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/b6.png"/>
+<div class = "backgroundDiv" id="imgBalls">
+	<img class = "backgroundDiv" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/bg.jpg">
+</div>
+<div class = "backgroundDiv" id="divBalls">
+</div>
+</body>
+</html>
