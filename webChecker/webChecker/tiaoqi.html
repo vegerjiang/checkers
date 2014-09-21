@@ -43,6 +43,49 @@ body {
     height:5%;
     color:black;
 }
+.buttonChangeUserNumWording{
+    position:absolute;
+    left:5%;
+    top:93%;
+    width:20%;
+    height:5%;
+    color:black;
+    background-color:green;
+    font-size:20px;
+}
+#tipDiv{
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:100%;
+    height:100%;
+    display:none;
+}
+#tipContent{
+    position:absolute;
+    left:20%;
+    top:20%;
+    width:60%;
+    height:60%;
+    background-color:#487856;
+}
+#allTipHTML{
+	display: none;
+}
+#userNumberSelectorsConetent{
+  position: relative;
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  height: 60%;
+  font-size:24px;
+}
+.radioType{
+	position: relative;
+	width: 10%;
+	height: 10%;
+	top: 2%;
+}
 </style>
 <!-- tiaoqiBase.js contain: event.js,common.js,map.js,ball.js,mapballbase.js-->
 <!--<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>-->
@@ -378,6 +421,37 @@ function changeUserAToUserB(userA,userB)
 }
 </script>
 
+<!-- tip -->
+<script type="text/javascript">
+function initTipDialog()
+{
+	touchFunc(document.getElementById("tipDiv"),"start",function(obj,type,param){
+		if (param.percentX < 20 
+			|| param.percentX > 80 
+			|| param.percentY < 20 
+			|| param.percentY > 80) {
+			dismissTip();
+		};
+	});
+}
+function showTipWithHtmlContent(htmlContent)
+{
+    document.getElementById("tipContent").innerHTML = htmlContent;
+    document.getElementById("tipDiv").style.display = "block";
+}
+function dismissTip()
+{
+	document.getElementById("tipDiv").style.display = "none";
+}
+function isTipShowing(){
+	return document.getElementById("tipDiv").style.display == "block";
+}
+function tipUserNumberChange()
+{
+	showTipWithHtmlContent(document.getElementById("userNumberSelectors").innerHTML);
+}
+</script>
+
 <!-- event -->
 <script type="text/javascript">
 function findMapKeyWithPxPy(px,py)
@@ -395,6 +469,9 @@ function addEventToAll(fnMyDefaut)
 {
 	touchFunc(document.body,"start",function(obj,type,param)
 	{
+		if (isTipShowing()) {
+			return;
+		};
 		if (type == "start") {
 			var mapKey = findMapKeyWithPxPy(param.percentX,param.percentY);
 			if (mapKey == undefined) {
@@ -436,7 +513,27 @@ function addEventToAll(fnMyDefaut)
 <script type="text/javascript">
 var reInitAll = function()
 {
+	removeAllBallOnPlatForm(function(ballInfo){
+		// dumpObj(ballInfo);
+		myMap[ballInfo.mapKey].ballIndex = undefined;
+	});
 
+	enableUserInfoIndexs = [];
+	// userAmount = 6;
+	currentUserIndex = undefined;
+
+	removeTheSource();
+	clearTaget();
+
+	successedUsers = [];
+
+	putOnBalls();
+
+	setTimeout(function() {
+		if (enableUserInfoIndexs.length > 0) {
+			setCurrentUserIndex(enableUserInfoIndexs[0],changeUserAToUserB);
+		};
+	}, 500);
 }
 var funDefault = function(percentX,percentY)
 {
@@ -444,9 +541,15 @@ var funDefault = function(percentX,percentY)
 		reInitAll();
 		return;
 	};
+    if (percentX < 25 && percentY > 90)
+    {
+    	tipUserNumberChange();
+        return;
+    }
 }
 function firstInitAll()
 {
+	initTipDialog();
     initMyMap();
     putOnBalls();
 	setTimeout(function() {
@@ -473,9 +576,25 @@ function startMyGame()
 </div>
 <div class = "backgroundDiv">
 <img src="https://raw.githubusercontent.com/vegerjiang/checkers/master/restart.png" class = "buttonRestart"></img>
-<div class="buttonRestartWording">restart</div>
+<div class="buttonRestartWording">REPLAY</div>
+<div class="buttonChangeUserNumWording">User Number</div>
 </div>
 <div class = "backgroundDiv" id="coverOfAll">
+</div>
+<div id="tipDiv">
+    <div id="tipContent">
+    </div>
+    <div id="allTipHTML">
+    	<div id="userNumberSelectors">
+    		<div id="userNumberSelectorsConetent">
+ 				<input class="radioType" type="radio" name="userNumber" value="1">one user<br><br>
+ 				<input class="radioType" type="radio" name="userNumber" value="2">two users<br><br>
+ 				<input class="radioType" type="radio" name="userNumber" value="3">three users<br><br>
+ 				<input class="radioType" type="radio" name="userNumber" value="4">four users<br><br>
+ 				<input class="radioType" type="radio" name="userNumber" value="6">six users
+    		</div>
+    	</div>
+    </div>
 </div>
 </body>
 </html>

@@ -63,7 +63,9 @@ var touchFunc = function(obj,type,func) {
             );
         }
     }, false);
- 
+    if (type == "start") {
+        return;
+    };
     obj.addEventListener("touchmove",function() {
         event.preventDefault();//阻止触摸时浏览器的缩放、滚动条滚动
         var pageX = event.targetTouches[0].pageX;
