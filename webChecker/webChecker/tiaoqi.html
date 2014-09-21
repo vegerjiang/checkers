@@ -128,7 +128,7 @@ function isBallInEnd(userIndex,x,y,z)
 }
 
 var enableUserInfoIndexs = [];
-var userAmount = 1;
+var userAmount = 6;
 var currentUserIndex = undefined;
 function currentUserFlagChange()
 {
@@ -161,11 +161,11 @@ function getUserInfoIndexWithUserNumber(userNumber)
 		case 2:
         return [4,5];
 		case 3:
-        return [0,4,3];
+        return [4,3,0];
 		case 4:
-        return [0,2,1,3];
+        return [1,3,0,2];
 		case 6:
-        return [0,2,4,1,3,5];
+        return [4,1,3,5,0,2];
 		default:
         return [];
 	}
@@ -438,7 +438,7 @@ function startMyGame()
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/taget.png"/>
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/source.png"/>
 <div class = "backgroundDiv" id="imgBalls">
-	<img class = "backgroundDiv" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/bg.jpg">
+	<img class = "backgroundDiv" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/backgound.jpg">
 </div>
 <div class = "backgroundDiv" id="coverOfAll">
 </div>
