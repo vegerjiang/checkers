@@ -28,6 +28,21 @@ body {
 	width:8%;
 	height:8%;
 }
+.buttonRestart{
+	position:absolute;
+	left:90%;
+	top:90%;
+	width:5%;
+	height:5%;
+}
+.buttonRestartWording{
+    position:absolute;
+    left:90%;
+    top:95%;
+    width:10%;
+    height:5%;
+    color:black;
+}
 </style>
 <!-- tiaoqiBase.js contain: event.js,common.js,map.js,ball.js,mapballbase.js-->
 <!--<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>-->
@@ -253,7 +268,7 @@ function putOnBalls()
         if (userIndex < 0 || ! elementExistInArray(userIndex,enableUserInfoIndexs)) {
             continue;
         };
-        var ballInfo = addOneBall(element["px"],element["py"],usersInfo[userIndex]["ballUrls"]);
+        var ballInfo = addOneBall(element["px"],element["py"],usersInfo[userIndex]["ballUrls"],"imgBalls");
         ballInfo["userIndex"] = userIndex;
         ballInfo["mapKey"] = elementKey;
         myMap[elementKey]["ballIndex"] = ballInfo.ballIndex;
@@ -376,13 +391,14 @@ function findMapKeyWithPxPy(px,py)
 	}
 	return undefined;
 }
-function addEventToAllBall()
+function addEventToAll(fnMyDefaut)
 {
 	touchFunc(document.body,"start",function(obj,type,param)
 	{
 		if (type == "start") {
 			var mapKey = findMapKeyWithPxPy(param.percentX,param.percentY);
 			if (mapKey == undefined) {
+				fnMyDefaut(param.percentX,param.percentY);
 				return;
 			};
 			if (myMap[mapKey].ballIndex != undefined) {
@@ -409,6 +425,7 @@ function addEventToAllBall()
 					};
 				};
 			};
+
 			return;
 		};
 	});
@@ -417,20 +434,34 @@ function addEventToAllBall()
 
 <!-- main -->
 <script type="text/javascript">
-function playGame()
+var reInitAll = function()
 {
+
+}
+var funDefault = function(percentX,percentY)
+{
+	if (percentX > 90 && percentY > 90) {
+		reInitAll();
+		return;
+	};
+}
+function firstInitAll()
+{
+    initMyMap();
+    putOnBalls();
 	setTimeout(function() {
 		if (enableUserInfoIndexs.length > 0) {
 			setCurrentUserIndex(enableUserInfoIndexs[0],changeUserAToUserB);
 		};
-		addEventToAllBall();
+		addEventToAll(funDefault);
 	}, 500);
 }
+
+
+
 function startMyGame()
 {
-    initMyMap();
-    putOnBalls();
-    playGame();
+    firstInitAll();
 }
 </script>
 </head>
@@ -439,6 +470,10 @@ function startMyGame()
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/source.png"/>
 <div class = "backgroundDiv" id="imgBalls">
 	<img class = "backgroundDiv" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/backgound.jpg">
+</div>
+<div class = "backgroundDiv">
+<img src="https://raw.githubusercontent.com/vegerjiang/checkers/master/restart.png" class = "buttonRestart"></img>
+<div class="buttonRestartWording">restart</div>
 </div>
 <div class = "backgroundDiv" id="coverOfAll">
 </div>

@@ -341,11 +341,22 @@ var allBallsOnPlatform = [
 ];
 
 
-function addOneBall(ballPx,ballPy,ballUrls)
+function addOneBall(ballPx,ballPy,ballUrls,ballsHTMLContainnerID)
 {
     var ballIndex = allBallsOnPlatform.length;
     var imgBallID = "img_ball_" + ballIndex;
-    document.getElementById("imgBalls").innerHTML += "<img class='ballBase' id='" + imgBallID + "' style='left:"+ballPx+"%;top:"+ballPy+"%;' src='"+ballUrls+"'></img>";
+    var ballTaget = imgBallHTML(imgBallID);
+    if (ballTaget == undefined) {
+        document.getElementById(ballsHTMLContainnerID).innerHTML 
+        += "<img class='ballBase' id='" + imgBallID + "' style='left:"+ballPx+"%;top:"+ballPy+"%;' src='"+ballUrls+"'></img>";
+    }else{
+        ballTaget.style.left = ballPx + "%";
+        ballTaget.style.top = ballPy + "%";
+        ballTaget.style.width = "5%";
+        ballTaget.style.height = "5%";
+        ballTaget.src = ballUrls;
+        ballTaget.style.display = "block";
+    }
     allBallsOnPlatform.push({
         "ballIndex":ballIndex,
         "imgBallID":imgBallID
@@ -354,6 +365,14 @@ function addOneBall(ballPx,ballPy,ballUrls)
 }
 function imgBallHTML(imgBallID){
     return document.getElementById(imgBallID);
+}
+function removeAllBallOnPlatForm(fnBallWillRemove)
+{
+    for (var i = 0; i < allBallsOnPlatform.length; i++) {
+        imgBallHTML(allBallsOnPlatform[i].imgBallID).style.display = "none";
+        fnBallWillRemove(allBallsOnPlatform[i]);
+    };
+    allBallsOnPlatform = [];
 }
 function findBallOnPlatformByKey(keyName,keyValue)
 {
