@@ -30,13 +30,16 @@ body {
 }
 </style>
 <!-- tiaoqiBase.js contain: event.js,common.js,map.js,ball.js,mapballbase.js-->
-<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>
+<!--<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>-->
+<script type="text/javascript" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/tiaoqiBase.js"></script>
 <!-- users -->
 <script type="text/javascript">
 var usersInfo = [
             {
                 "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b1.png",
                 "startBallFlag":"101",
+                "endBallFlag":"-10-1",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":80,
                 	"py":16
@@ -45,6 +48,8 @@ var usersInfo = [
             {
                  "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b2.png",
                  "startBallFlag":"-10-1",
+                "endBallFlag":"101",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":12,
                 	"py":75
@@ -53,6 +58,8 @@ var usersInfo = [
             {
                 "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b3.png",
                 "startBallFlag":"110",
+                "endBallFlag":"-1-10",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":91,
                 	"py":53
@@ -61,6 +68,8 @@ var usersInfo = [
             {
                 "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b4.png",
                 "startBallFlag":"-1-10",
+                "endBallFlag":"110",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":0,
                 	"py":39
@@ -69,6 +78,8 @@ var usersInfo = [
             {
                 "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b5.png",
                 "startBallFlag":"01-1",
+                "endBallFlag":"0-11",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":55,
                 	"py":87
@@ -77,6 +88,8 @@ var usersInfo = [
             {
                 "ballUrls":"https://raw.githubusercontent.com/vegerjiang/checkers/master/b6.png",
                 "startBallFlag":"0-11",
+                "endBallFlag":"01-1",
+                "amountOfBall":10,
                 "currentFlag":{
                 	"px":35,
                 	"py":10
@@ -98,6 +111,20 @@ function userIndexWithStartBallPlace(x,y,z){
         };
     };
     return -1;
+}
+function isBallInEnd(userIndex,x,y,z)
+{
+    if (abs(x) + abs(y) + abs(z) <= 4) {
+        return false;
+    };
+    var currentBallFlag = "";
+    currentBallFlag += (x>0?1:x<0?-1:0);
+    currentBallFlag += (y>0?1:y<0?-1:0);
+    currentBallFlag += (z>0?1:z<0?-1:0);
+    if (usersInfo[userIndex].endBallFlag == currentBallFlag) {
+    	return true;
+    };
+    return false;
 }
 
 var enableUserInfoIndexs = [];
@@ -124,15 +151,6 @@ function setCurrentUserIndex(currentIndex,fnUserIndexChanged){
 		fnUserIndexChanged(oldUserIndex,currentUserIndex);
 	};
 	currentUserFlagChange();
-}
-function nextUserIndex(fnUserIndexChanged)
-{
-	for (var i = 0; i < enableUserInfoIndexs.length; i++) {
-		if(currentUserIndex == enableUserInfoIndexs[i]){
-			setCurrentUserIndex(enableUserInfoIndexs[(i+1)%enableUserInfoIndexs.length],fnUserIndexChanged);
-			break;
-		}
-	};
 }
 function getUserInfoIndexWithUserNumber(userNumber)
 {
@@ -252,6 +270,59 @@ function ballIsForCurrentUser(ballIndex){
 <!-- all mix -->
 <script type="text/javascript">
 
+function amountOfEndBallForUserIndex(userIndex){
+	var amount = 0;
+	for (var i = 0; i < allBallsOnPlatform.length; i++) {
+		var mapObj = myMap[allBallsOnPlatform[i].mapKey];
+		if (isBallInEnd(userIndex,mapObj.x,mapObj.y,mapObj.z)) {
+			amount ++;
+		};
+	};
+	return amount;
+}
+
+var successedUsers = [];
+
+function checkIsUserSuccess(userIndex)
+{
+	if (amountOfEndBallForUserIndex(userIndex) == usersInfo[userIndex].amountOfBall) {
+		successedUsers.push(userIndex);
+		return true;
+	};
+	return false;
+}
+
+function isUserSuccessed(userIndex){
+	if (elementExistInArray(userIndex,successedUsers)) {
+		return true;
+	};
+	return false;
+}
+
+function findNextUserNeedToContinue(fnUserIndexChanged)
+{
+	var userIndexIndex = -1;
+	for (var i = 0; i < enableUserInfoIndexs.length; i++) {
+		if(currentUserIndex == enableUserInfoIndexs[i]){
+			userIndexIndex = i;
+			// setCurrentUserIndex(enableUserInfoIndexs[(i+1)%enableUserInfoIndexs.length],fnUserIndexChanged);
+			break;
+		}
+	};
+	if (userIndexIndex == -1) {
+		return -1;
+	};
+	var nextIndexIndex = -1;
+	for (var i = 0; i < enableUserInfoIndexs.length; i++) {
+		if (isUserSuccessed(enableUserInfoIndexs[(i+userIndexIndex)%enableUserInfoIndexs.length]) != true) {
+			nextIndexIndex = (i+userIndexIndex)%enableUserInfoIndexs.length;
+			break;
+		};
+	};
+	return nextIndexIndex;
+}
+
+
 var activeMapKey = undefined;
 var enableMoveMapKey = [];
 function removeActive(){
@@ -321,7 +392,14 @@ function addEventToAllBall()
 					if (enableMoveMapKey[i] == mapKey) {
 						moveBallWithMapKey(activeMapKey,mapKey);
 						removeActive();
-						nextUserIndex(changeUserAToUserB);
+						if(checkIsUserSuccess(currentUserIndex))
+						{
+							alert(currentUserIndex+" finish the game");
+						}
+						if(findNextUserNeedToContinue(changeUserAToUserB)<0)
+						{
+							alert("gameOver,the result is: " + successedUsers);
+						};
 						return;
 					};
 				};
