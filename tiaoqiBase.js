@@ -409,7 +409,7 @@ function moveBallWithMapKey(fromMapKey,toMapKey)
     allBallsOnPlatform[ballIndex]["mapKey"] = toMapKey;
     imgBallHTML(allBallsOnPlatform[ballIndex]["imgBallID"]).style.left = myMap[toMapKey]["px"] + "%";
     imgBallHTML(allBallsOnPlatform[ballIndex]["imgBallID"]).style.top = myMap[toMapKey]["py"] + "%";
-    return true;
+    return allBallsOnPlatform[ballIndex];
 }
 function findMapKeyWalkFrom(mapKey)
 {

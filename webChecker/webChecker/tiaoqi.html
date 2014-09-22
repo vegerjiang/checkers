@@ -72,7 +72,7 @@ body {
 #allTipHTML{
 	display: none;
 }
-#userNumberSelectorsConetent{
+.commonSpecialTip{
   position: relative;
   left: 20%;
   top: 20%;
@@ -80,14 +80,21 @@ body {
   height: 60%;
   font-size:24px;
 }
-.radioType{
+.itemImgType{
 	position: relative;
+	width: 10%;
+	height: 10%;
 	top: 2%;
+}
+.resutBallType{
+  	position: relative;
+	width: 10%;
+	height: 10%;
 }
 </style>
 <!-- tiaoqiBase.js contain: event.js,common.js,map.js,ball.js,mapballbase.js-->
-<!--<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>-->
-<script type="text/javascript" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/tiaoqiBase.js"></script>
+<script type="text/javascript" src="http://www.5igame.cc:8080/WebContent/tiaoqiBase.js"></script>
+<!-- <script type="text/javascript" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/tiaoqiBase.js"></script> -->
 <!-- users -->
 <script type="text/javascript">
 var usersInfo = [
@@ -183,8 +190,22 @@ function isBallInEnd(userIndex,x,y,z)
     return false;
 }
 
+function initUserInfoStep()
+{
+	for (var i = 0; i < usersInfo.length; i++) {
+		usersInfo[i].step = 0;
+	};
+}
+
+function incrementInfoStep(userIndex)
+{
+	alert(userIndex);
+	alert(usersInfo[userIndex].step);
+	usersInfo[userIndex].step ++;
+}
+
 var enableUserInfoIndexs = [];
-var userAmount = 6;
+var userAmount = 2;
 var currentUserIndex = undefined;
 function currentUserFlagChange()
 {
@@ -446,7 +467,45 @@ function isTipShowing(){
 }
 function tipUserNumberChange()
 {
-	showTipWithHtmlContent(document.getElementById("userNumberSelectors").innerHTML);
+	showTipWithHtmlContent(document.getElementById("userNumberSelectors").innerHTML.replace(/user_temp_/g,"user_realyItem_"));
+	setTimeout(function() {
+		document.getElementById("user_realyItem_"+userAmount).src = "https://raw.githubusercontent.com/vegerjiang/checkers/master/readioSelected.png";
+	}, 20);
+}
+function tipResult()
+{
+	var maybeNames = ["WINNER","Second","Third","Fourth","Fifth","LOSER"];
+	var orderNames = [];
+	switch(successedUsers.length)
+	{
+		case 1:
+			orderNames = [maybeNames[0]];
+			break;
+
+		case 2:
+			orderNames = [maybeNames[0],maybeNames[5]];
+			break;
+
+		case 3:
+			orderNames = [maybeNames[0],maybeNames[1],maybeNames[5]];
+			break;
+
+		case 4:
+			orderNames = [maybeNames[0],maybeNames[1],maybeNames[2],maybeNames[5]];
+			break;
+		case 6:
+			orderNames = maybeNames;
+			break;
+		default:
+			break;
+	}
+	var contentHTML = "<div class='commonSpecialTip'>";
+	for (var i = 0; i < successedUsers.length; i++) {
+		var tempHTML = document.getElementById("resultItem").innerHTML.replace("theOrderOfUser",orderNames[i]).replace("ballUrl",usersInfo[successedUsers[i]].ballUrls).replace("theStepAmount",usersInfo[successedUsers[i]].step);
+		contentHTML += tempHTML;
+	};
+    contentHTML += "</div>";
+	showTipWithHtmlContent(contentHTML);
 }
 </script>
 
@@ -486,15 +545,19 @@ function addEventToAll(fnMyDefaut)
 			if (activeMapKey != undefined) {
 				for (var i = 0; i < enableMoveMapKey.length; i++) {
 					if (enableMoveMapKey[i] == mapKey) {
-						moveBallWithMapKey(activeMapKey,mapKey);
+						var ballInfo = moveBallWithMapKey(activeMapKey,mapKey);
+						if (ballInfo) {
+							incrementInfoStep(ballInfo.userIndex);
+						};
 						removeActive();
 						if(checkIsUserSuccess(currentUserIndex))
 						{
-							alert(currentUserIndex+" finish the game");
+
 						}
 						if(findNextUserNeedToContinue(changeUserAToUserB)<0)
 						{
-							alert("gameOver,the result is: " + successedUsers);
+							tipResult();
+							reInitAll();
 						};
 						return;
 					};
@@ -527,11 +590,21 @@ var reInitAll = function()
 
 	putOnBalls();
 
+	initUserInfoStep();
+
 	setTimeout(function() {
 		if (enableUserInfoIndexs.length > 0) {
 			setCurrentUserIndex(enableUserInfoIndexs[0],changeUserAToUserB);
 		};
 	}, 500);
+}
+function userNumberChangedTo(num){
+	if (userAmount == num) {
+		return;
+	};
+	userAmount = num;
+	reInitAll();
+	dismissTip();
 }
 var funDefault = function(percentX,percentY)
 {
@@ -550,6 +623,7 @@ function firstInitAll()
 	initTipDialog();
     initMyMap();
     putOnBalls();
+    initUserInfoStep();
 	setTimeout(function() {
 		if (enableUserInfoIndexs.length > 0) {
 			setCurrentUserIndex(enableUserInfoIndexs[0],changeUserAToUserB);
@@ -569,6 +643,7 @@ function startMyGame()
 <body onLoad="startMyGame()">
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/taget.png"/>
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/source.png"/>
+<img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/readioSelected.png"/>
 <div class = "backgroundDiv" id="imgBalls">
 	<img class = "backgroundDiv" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/backgound.jpg">
 </div>
@@ -584,14 +659,21 @@ function startMyGame()
     </div>
     <div id="allTipHTML">
     	<div id="userNumberSelectors">
-    		<div id="userNumberSelectorsConetent">
- 				<input class="radioType" type="radio" name="userNumber" value="1">one user<br><br>
- 				<input class="radioType" type="radio" name="userNumber" value="2">two users<br><br>
- 				<input class="radioType" type="radio" name="userNumber" value="3">three users<br><br>
- 				<input class="radioType" type="radio" name="userNumber" value="4">four users<br><br>
- 				<input class="radioType" type="radio" name="userNumber" value="6">six users
+    		<div class="commonSpecialTip">
+    			<a href="javascript:userNumberChangedTo(1);"><img class="itemImgType" id="user_temp_1" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>one user</a>
+    			<br><br>
+    			<a href="javascript:userNumberChangedTo(2);"><img class="itemImgType" id="user_temp_2" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>two users</a>
+    			<br><br>
+    			<a href="javascript:userNumberChangedTo(3);"><img class="itemImgType" id="user_temp_3" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>three users</a>
+    			<br><br>
+    			<a href="javascript:userNumberChangedTo(4);"><img class="itemImgType" id="user_temp_4" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>four users</a>
+    			<br><br>
+    			<a href="javascript:userNumberChangedTo(6);"><img class="itemImgType" id="user_temp_6" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>six users</a>
     		</div>
     	</div>
+    	<div id="resultItem">
+    		<img class="resutBallType" src="ballUrl"></img>&nbsp;&nbsp;is&nbsp;the&nbsp;&nbsp;theOrderOfUser&nbsp;&nbsp;use&nbsp;theStepAmount&nbsp;steps.<br/><br/>
+   		</div>
     </div>
 </div>
 </body>
