@@ -62,24 +62,30 @@ body {
     display:none;
 }
 #tipContent{
-    position:absolute;
-    left:20%;
-    top:20%;
-    width:60%;
-    height:60%;
-    background-color:#487856;
+  position:absolute;
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  height: 60%;
+  background-color:#487856;
 }
 #allTipHTML{
 	display: none;
 }
 .commonSpecialTip{
   position: relative;
-  left: 20%;
-  top: 20%;
-  width: 60%;
-  height: 60%;
+  left:5%;
+  top:5%;
+  width:90%;
+  height:90%;
   font-size:24px;
+  color:black;
 }
+.commonSpecialTip a{font-size:24px;}
+.commonSpecialTip a:link    {color:black;font-size:24px;text-decoration:none;}
+.commonSpecialTip a:visited {color:black;font-size:24px;text-decoration:none;}
+.commonSpecialTip a:hover   {color:black;font-size:24px;text-decoration:none;}
+.commonSpecialTip a:active  {color:black;font-size:24px;text-decoration:none;}
 .itemImgType{
 	position: relative;
 	width: 10%;
@@ -199,8 +205,6 @@ function initUserInfoStep()
 
 function incrementInfoStep(userIndex)
 {
-	alert(userIndex);
-	alert(usersInfo[userIndex].step);
 	usersInfo[userIndex].step ++;
 }
 
@@ -639,6 +643,59 @@ function startMyGame()
     firstInitAll();
 }
 </script>
+
+<!-- share -->
+<script type="text/javascript">
+        function onBridgeReady() {
+          
+          var imgUrl = "http://www.5igame.cc:8080/WebContent/tiaoqiLogo.jpg";
+          var lineLink = "http://www.5igame.cc:8080/WebContent/tiaoqi.html";
+          var descContent = 'tiao qi';
+          var shareTitle = 'play tiao qi with your friends.';
+          var appid = '';
+           
+          var SharePack = {
+              appid: appid,
+              img_url: imgUrl,
+              img_width: "120",
+              img_height: "120",
+              link:lineLink,
+              desc: descContent,
+              title: shareTitle
+          };
+          if (SharePack.img_url.indexOf("://") < 0) {
+              SharePack.img_url = window.location.href.replace(/[^\/]*[\?#].*$/, "") + SharePack.img_url
+          }
+          function shareCb(res) {}
+            WeixinJSBridge.on("menu:share:appmessage",
+            function(argv) {
+                WeixinJSBridge.invoke("sendAppMessage", SharePack, shareCb)
+            });
+            WeixinJSBridge.on("menu:share:timeline",
+            function(argv) {
+                WeixinJSBridge.invoke("shareTimeline", SharePack, shareCb)
+            });
+            WeixinJSBridge.on("menu:share:weibo",
+            function(argv) {
+                WeixinJSBridge.invoke("shareWeibo", {
+                    content: SharePack.title,
+                    url: SharePack.link
+                },
+                shareCb)
+            });
+            WeixinJSBridge.on("menu:share:facebook",
+            function(argv) {
+                WeixinJSBridge.invoke("shareFB", SharePack, shareCb)
+            })
+        }
+        if (document.addEventListener) {
+            document.addEventListener("WeixinJSBridgeReady", onBridgeReady, false)
+        } else if (document.attachEvent) {
+            document.attachEvent("WeixinJSBridgeReady", onBridgeReady);
+            document.attachEvent("onWeixinJSBridgeReady", onBridgeReady)
+        }
+</script>
+
 </head>
 <body onLoad="startMyGame()">
 <img class = "disableImage" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/taget.png"/>
@@ -660,15 +717,15 @@ function startMyGame()
     <div id="allTipHTML">
     	<div id="userNumberSelectors">
     		<div class="commonSpecialTip">
-    			<a href="javascript:userNumberChangedTo(1);"><img class="itemImgType" id="user_temp_1" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>one user</a>
+    			<a href="javascript:userNumberChangedTo(1);"><img class="itemImgType" id="user_temp_1" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>&nbsp;&nbsp;1&nbsp;user</a>
     			<br><br>
-    			<a href="javascript:userNumberChangedTo(2);"><img class="itemImgType" id="user_temp_2" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>two users</a>
+    			<a href="javascript:userNumberChangedTo(2);"><img class="itemImgType" id="user_temp_2" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>&nbsp;&nbsp;2&nbsp;users</a>
     			<br><br>
-    			<a href="javascript:userNumberChangedTo(3);"><img class="itemImgType" id="user_temp_3" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>three users</a>
+    			<a href="javascript:userNumberChangedTo(3);"><img class="itemImgType" id="user_temp_3" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>&nbsp;&nbsp;3&nbsp;users</a>
     			<br><br>
-    			<a href="javascript:userNumberChangedTo(4);"><img class="itemImgType" id="user_temp_4" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>four users</a>
+    			<a href="javascript:userNumberChangedTo(4);"><img class="itemImgType" id="user_temp_4" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>&nbsp;&nbsp;4&nbsp;users</a>
     			<br><br>
-    			<a href="javascript:userNumberChangedTo(6);"><img class="itemImgType" id="user_temp_6" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>six users</a>
+    			<a href="javascript:userNumberChangedTo(6);"><img class="itemImgType" id="user_temp_6" src="https://raw.githubusercontent.com/vegerjiang/checkers/master/radioUnSelected.png"/>&nbsp;&nbsp;6&nbsp;users</a>
     		</div>
     	</div>
     	<div id="resultItem">

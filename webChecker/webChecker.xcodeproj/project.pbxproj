@@ -23,6 +23,7 @@
 		22ACFA8019CDB69000B7C9B8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 22ACFA7E19CDB69000B7C9B8 /* InfoPlist.strings */; };
 		22ACFA8219CDB69000B7C9B8 /* webCheckerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 22ACFA8119CDB69000B7C9B8 /* webCheckerTests.m */; };
 		22ACFA8C19CDB6D200B7C9B8 /* tiaoqi.html in Resources */ = {isa = PBXBuildFile; fileRef = 22ACFA8B19CDB6D200B7C9B8 /* tiaoqi.html */; };
+		22D6676019D1C90300C87E42 /* myTest.html in Resources */ = {isa = PBXBuildFile; fileRef = 22D6675F19D1C90300C87E42 /* myTest.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		22ACFA7F19CDB69000B7C9B8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		22ACFA8119CDB69000B7C9B8 /* webCheckerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = webCheckerTests.m; sourceTree = "<group>"; };
 		22ACFA8B19CDB6D200B7C9B8 /* tiaoqi.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = tiaoqi.html; sourceTree = "<group>"; };
+		22D6675F19D1C90300C87E42 /* myTest.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = myTest.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 		22ACFA5A19CDB69000B7C9B8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				22D6675F19D1C90300C87E42 /* myTest.html */,
 				22ACFA8B19CDB6D200B7C9B8 /* tiaoqi.html */,
 				22ACFA5B19CDB69000B7C9B8 /* webChecker-Info.plist */,
 				22ACFA5C19CDB69000B7C9B8 /* InfoPlist.strings */,
@@ -239,6 +242,7 @@
 				22ACFA6F19CDB69000B7C9B8 /* Images.xcassets in Resources */,
 				22ACFA6719CDB69000B7C9B8 /* Main_iPhone.storyboard in Resources */,
 				22ACFA8C19CDB6D200B7C9B8 /* tiaoqi.html in Resources */,
+				22D6676019D1C90300C87E42 /* myTest.html in Resources */,
 				22ACFA5E19CDB69000B7C9B8 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,6 +483,7 @@
 				22ACFA8719CDB69000B7C9B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		22ACFA8819CDB69000B7C9B8 /* Build configuration list for PBXNativeTarget "webCheckerTests" */ = {
 			isa = XCConfigurationList;
@@ -487,6 +492,7 @@
 				22ACFA8A19CDB69000B7C9B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
